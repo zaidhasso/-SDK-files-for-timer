@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include "platform.h"
+#include "xil_printf.h"
+#include "xparameters.h"
+#include "xtmrctr.h"
+
+XTmrCtr_Config *tC;
+XTmrCtr tI;
+
+
+void tmrInit(){
+	tC = XTmrCtr_LookupConfig(XPAR_TMRCTR_0_DEVICE_ID);
+	XTmrCtr_CfgInitialize(&tI,tC,XPAR_TMRCTR_0_BASEADDR);
+
+}
+
+
+
+
+
+int main()
+{
+    init_platform();
+    tmrInit();
+    XTmrCtr_Stop(&tI,0);
+    XTmrCtr_SetResetValue(&tI, 0, 0);
+    XTmrCtr_SetOptions(&tI, 0, 0); ////Reseting Settings
+    XTmrCtr_Start(&tI,0);
+    u32 value1 = XTmrCtr_GetValue(&tI, 0);
+    xil_printf("Delay of 1 sec achvd\n");
+    u32 value2 = XTmrCtr_GetValue(&tI, 0);
+
+    u32 result = (value2 - value1)*10;
+    xil_printf("Measured Delay : %0d uSec\n",result);
+    xil_printf("Value 1 : %0d  and Value 2:  %0d \n",value1,value2);
+    cleanup_platform();
+    return 0;
+}
